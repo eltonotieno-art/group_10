@@ -18,7 +18,7 @@ class Tile:
 window = tkinter.Tk()
 window.title("snake")
 window.resizable(False, False)
-canvas = tkinter.Canvas(window,bg="green",width= WINDOW_WIDTH,height= WINDOW_HEIGHT,borderwidth=0,highlightthickness=0)
+canvas = tkinter.Canvas(window,bg="black",width= WINDOW_WIDTH,height= WINDOW_HEIGHT,borderwidth=0,highlightthickness=0)
 canvas.pack()
 window.update()
 
@@ -42,13 +42,29 @@ velocityY= 0
 game_over = False
 score= 0
 
+
+def reset_game():
+    global snake, food, snake_body, velocityX, velocityY, game_over, score
+    snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) #single tile, snake's head
+    food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
+    snake_body= [] #multiple snake tiles
+    velocityX= 0
+    velocityY= 0
+    game_over = False
+    score= 0
+
 def change_direction(e): #e = event
    # print (e)
    #print(e.keysym)
    global velocityX, velocityY, game_over
 
+   key = e.char
+   print(e, 'is pressed')
+
    if(game_over):
-       return
+       if(e.keysym =="r"):
+        reset_game()
+    
    if (e.keysym == "Up" and velocityY !=1):
        velocityX=0
        velocityY=-1
@@ -63,8 +79,10 @@ def change_direction(e): #e = event
 
    elif (e.keysym =="Right"and velocityX !=-1):
        velocityX= 1
-    
        velocityY= 0
+
+
+       
     
 def move():
     global snake, food, snake_body, game_over,score
@@ -115,13 +133,14 @@ def draw():
     canvas.create_rectangle(food.x, food.y,food.x + TILE_SIZE,food.y + TILE_SIZE, fill="red")
 
     #draw snake
-    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE,fill="black")
+    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE,fill="green")
 
     for tile in snake_body:
-        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill="black")
+        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill="green")
 
     if(game_over):
-        canvas.create_text(WINDOW_WIDTH/2,WINDOW_HEIGHT/2, font= "Arial,20" , text= f"GAME OVER:{score}", fill="navy blue")
+        canvas.create_text(WINDOW_WIDTH/2,WINDOW_HEIGHT/2, font= "Arial,20" , text= f"GAME OVER:{score}\n", fill="navy blue")
+        canvas.create_text(WINDOW_WIDTH/2,WINDOW_HEIGHT/2, font= "Arial,20" , text= "\nPress R to restart", fill="navy blue")
     else:
         canvas.create_text(40, 30, font= "Arial,10", text=f"score:{score}", fill="purple")
 
