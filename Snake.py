@@ -1,5 +1,9 @@
 import tkinter
 import random
+import pygame
+
+import os
+os.environ["SDL_AUDIODRIVER"] = "pulseaudio"  # or "alsa"
 
 ROWS=25
 COLS=25
@@ -42,8 +46,17 @@ velocityY= 0
 game_over = False
 score= 0
 
+# Initialize Pygame mixer
+pygame.mixer.init()
+
+sound_pickup = pygame.mixer.Sound("pickup.mp3")
+sound_game_over = pygame.mixer.Sound("game_over.mp3")
+sound_start = pygame.mixer.Sound("game_start.mp3")
+
+
 
 def reset_game():
+    sound_start.play()
     global snake, food, snake_body, velocityX, velocityY, game_over, score
     snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) #single tile, snake's head
     food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
@@ -52,6 +65,7 @@ def reset_game():
     velocityY= 0
     game_over = False
     score= 0
+    
 
 def change_direction(e): #e = event
    # print (e)
@@ -90,21 +104,25 @@ def move():
         return
     
     if(snake.x < 0 or  snake.x >= WINDOW_WIDTH or snake.y < 0 or snake.y >= WINDOW_HEIGHT):
+        sound_game_over.play()
         game_over = True
         return
     
     for tile in snake_body:
         if(snake.x == tile.x and snake.y == tile.y ):
+            sound_game_over.play()
             game_over= True
             return
 
 
     #collision
     if(snake.x == food.x and snake.y == food.y):
+        sound_pickup.play()
         snake_body.append(Tile(food.x,food.y))
         food.x = random.randint(0, COLS-1)* TILE_SIZE
         food.y = random.randint(0,ROWS-1)* TILE_SIZE
         score += 1
+
     #update snake body
     for i in range(len(snake_body)-1, -1, -1):
         
